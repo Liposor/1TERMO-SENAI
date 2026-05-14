@@ -1,4 +1,4 @@
-# Documento de Levantamento de Requisitos de Software
+# Levantamento de Requisitos de Software
 
 ## 1. Introdução
 Este documento detalha o levantamento de requisitos para o desenvolvimento do sistema, consolidando as informações coletadas por meio de diversas técnicas de engenharia de requisitos, incluindo entrevistas, brainstormings e prototipagem.
