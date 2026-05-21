@@ -1,13 +1,10 @@
 import json
 from time import sleep
-id = 0
 
 usuarios = "usuarios.json"
 
 usuariologado = ""
 setorlogado = ""
-
-
 
 def carregar_dados():
     try:
@@ -15,19 +12,18 @@ def carregar_dados():
             return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         return []
-    
+   
 def salvar_dados(dados):
     with open(usuarios, 'w', encoding='utf-8') as f:
         json.dump(dados, f, indent=4, ensure_ascii=False)
 
 def cadastro():
-    print("\n CADASTRO ")
+    print("\n--- CADASTRO ---")
     usuario = input("Digite o nome de usuário: ")
-    Setor = input("Digite a Setor: ")
-    
+    Setor = input("Digite o Setor: ")
+   
     dados = carregar_dados()
-    
-    
+   
     if any(u['usuario'] == usuario for u in dados):
         print("Erro: Este usuário já existe!")
     else:
@@ -36,62 +32,82 @@ def cadastro():
         print("Usuário cadastrado com sucesso!")
 
 def Verificacao():
-    print("Verificando seus dados...")
-    dados = carregar_dados()
+    print("\nVerificando seus dados...")
     sleep(1)
-    print("Dados Carregados: ")
     
-    Nr10 = any(u['usuario'] == usuariologado and u['NR10'] == True for u in dados)
-    Nr35 = any(u['usuario'] == usuariologado and u['NR35'] == True for u in dados)
-    Brigada = any(u['usuario'] == usuariologado and u['Brigada'] == True for u in dados)
+    dados = carregar_dados()
     
-    
-    if Nr10:
+    # Encontra o índice do usuário logado na lista de dados
+    usuario_index = None
+    for i, u in enumerate(dados):
+        if u['usuario'] == usuariologado:
+            usuario_index = i
+            break
+
+    if usuario_index is None:
+        print("Erro: Usuário não encontrado na base de dados.")
+        return
+
+    user_data = dados[usuario_index]
+
+    # --- VERIFICAÇÃO NR10 ---
+    if user_data['NR10']:
         print("NR10: Ok")
     else:
-        verificao = input("Você deseja verificar o NR10? (Sim | Não)")
+        verificao = input("Você deseja verificar o NR10? (Sim | Não): ").capitalize()
         if verificao == "Sim":
-            print("A norma NR-10 (Segurança em Instalações e Serviços em Eletricidade) estabelece requisitos e condições mínimas para garantir a segurança e a saúde dos trabalhadores que interagem, direta ou indiretamente, com instalações elétricas e serviços com eletricidade. Ela abrange etapas de projeto, geração, transmissão, distribuição e consumo. ")
-            dados.append({"usuario": usuariologado, "Setor": setorlogado, "NR10": True, "NR35": Nr35, "Brigada": Brigada})
+            print("\nA norma NR-10 (Segurança em Instalações e Serviços em Eletricidade) estabelece requisitos e condições mínimas para garantir a segurança e a saúde dos trabalhadores que interagem com instalações elétricas.")
+            user_data['NR10'] = True
             salvar_dados(dados)
-            sleep(5)
-            print("Prosseguindo para a próxima")
-        else:
-            print("Prosseguindo para a próxima.")
-            dados.append({"usuario": usuariologado, "Setor": setorlogado, "NR10": False, "NR35": Nr35, "Brigada": Brigada})
+            sleep(3)
+        print("Prosseguindo para a próxima...\n")
+
+    # --- VERIFICAÇÃO NR35 ---
+    if user_data['NR35']:
+        print("NR35: Ok")
+    else:
+        verificao = input("Você deseja verificar o NR35? (Sim | Não): ").capitalize()
+        if verificao == "Sim":
+            print("\nA norma NR-35 estabelece os requisitos mínimos e as medidas de proteção para o trabalho em altura, envolvendo o planejamento, a organização e a execução, de forma a garantir a segurança e a saúde dos trabalhadores envolvidos direta ou indiretamente com esta atividade.")
+            user_data['NR35'] = True
             salvar_dados(dados)
-    
-    
-    
-    print("NR35: ")
-    print("Brigada: ")
-    
-    
+            sleep(3)
+        print("Prosseguindo para a próxima...\n")
+
+    # --- VERIFICAÇÃO BRIGADA ---
+    if user_data['Brigada']:
+        print("Brigada: Ok")
+    else:
+        verificao = input("Você deseja verificar a Brigada de Incêndio? (Sim | Não): ").capitalize()
+        if verificao == "Sim":
+            print("\nA Brigada de Incêndio é um grupo organizado de pessoas treinadas e capacitadas para atuar na prevenção, combate a princípio de incêndio, abandono de área e primeiros socorros dentro de uma empresa ou estabelecimento.")
+            user_data['Brigada'] = True
+            salvar_dados(dados)
+            sleep(3)
+        print("Verificações concluídas.\n")
 
 def login():
-    print("\n LOGIN ")
+    global usuariologado, setorlogado  # Necessário para alterar as variáveis globais
+    
+    print("\n--- LOGIN ---")
     usuario = input("Usuário: ")
     Setor = input("Setor: ")
-    usuariologado = usuario
-    setorlogado = Setor
+   
     dados = carregar_dados()
-    
 
     autenticado = any(u['usuario'] == usuario and u['Setor'] == Setor for u in dados)
-    
+   
     if autenticado:
-
+        usuariologado = usuario
+        setorlogado = Setor
         print(f"Bem-vindo, {usuario}! Login realizado.")
         Verificacao()
-        
     else:
         print("Usuário ou Setor incorretos.")
-        
 
 def menu():
     while True:
-
-        opcao = input("Seja bem-vindo! O que deseja fazer? (Login | Cadastro | Sair): ").capitalize()
+        opcao = input("\nSeja bem-vindo! O que deseja fazer? (Login | Cadastro | Sair): ").capitalize()
 
         if opcao == "Cadastro":
             cadastro()
@@ -102,8 +118,5 @@ def menu():
             break
         else:
             print("Opção inválida! Tente novamente.")
-
-
-
 
 menu()
