@@ -29,3 +29,6 @@ for i in range(numeros):
 
 resultado = lista / numerosDigi     
 print(f"O resultado da divisão é: {resultado:.2f}")
+
+
+# sim
